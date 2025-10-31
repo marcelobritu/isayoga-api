@@ -1,0 +1,71 @@
+### IsaYoga API - Exemplos de Requisições
+### Use com REST Client (VSCode) ou copie os curl commands
+
+### Health Check
+GET http://localhost:8080/health
+
+###
+
+### Criar um novo usuário
+POST http://localhost:8080/api/v1/users
+Content-Type: application/json
+
+{
+  "name": "Maria Silva",
+  "email": "maria@example.com"
+}
+
+###
+
+### Listar todos os usuários
+GET http://localhost:8080/api/v1/users
+
+###
+
+### Buscar um usuário específico (substitua {id} por um ID real)
+GET http://localhost:8080/api/v1/users/507f1f77bcf86cd799439011
+
+###
+
+### Atualizar um usuário (substitua {id} por um ID real)
+PUT http://localhost:8080/api/v1/users/507f1f77bcf86cd799439011
+Content-Type: application/json
+
+{
+  "name": "Maria Silva Santos",
+  "email": "maria.santos@example.com"
+}
+
+###
+
+### Deletar um usuário (substitua {id} por um ID real)
+DELETE http://localhost:8080/api/v1/users/507f1f77bcf86cd799439011
+
+###
+
+#######################################
+### CURL Commands (Terminal)
+#######################################
+
+### Health Check
+# curl http://localhost:8080/health
+
+### Criar usuário
+# curl -X POST http://localhost:8080/api/v1/users \
+#   -H "Content-Type: application/json" \
+#   -d '{"name":"João Silva","email":"joao@example.com"}'
+
+### Listar usuários
+# curl http://localhost:8080/api/v1/users
+
+### Buscar usuário
+# curl http://localhost:8080/api/v1/users/{id}
+
+### Atualizar usuário
+# curl -X PUT http://localhost:8080/api/v1/users/{id} \
+#   -H "Content-Type: application/json" \
+#   -d '{"name":"João Silva Santos","email":"joao.santos@example.com"}'
+
+### Deletar usuário
+# curl -X DELETE http://localhost:8080/api/v1/users/{id}
+

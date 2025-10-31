@@ -1,0 +1,40 @@
+# Binários
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+isayoga-api
+*.test
+*.out
+
+# Dependências
+vendor/
+
+# Arquivos de ambiente
+.env
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Documentação
+README.md
+examples.http
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
