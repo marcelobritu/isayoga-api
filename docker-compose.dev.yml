@@ -54,6 +54,23 @@ services:
       zipkin:
         condition: service_started
 
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.dev
+    container_name: isayoga-frontend-dev
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8080
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    networks:
+      - isayoga-dev-network
+    depends_on:
+      - api
+
 networks:
   isayoga-dev-network:
     driver: bridge

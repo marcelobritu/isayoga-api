@@ -8,10 +8,10 @@ tmp_dir = "tmp"
 [build]
   args_bin = []
   bin = "./tmp/main"
-  cmd = "wire ./cmd/http && go build -o ./tmp/main ./cmd/http"
+  cmd = "wire ./cmd/http && go build -buildvcs=false -o ./tmp/main ./cmd/http"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata"]
-  exclude_file = []
+  exclude_file = ["cmd/http/wire_gen.go"]
   exclude_regex = ["_test.go"]
   exclude_unchanged = false
   follow_symlink = false

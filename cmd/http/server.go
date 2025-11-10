@@ -6,9 +6,11 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/go-chi/chi/v5"
+	pkgAuth "github.com/marcelobritu/isayoga-api/pkg/auth"
 	"github.com/marcelobritu/isayoga-api/pkg/config"
 	"github.com/marcelobritu/isayoga-api/pkg/logger"
 	"github.com/marcelobritu/isayoga-api/pkg/telemetry"
@@ -41,6 +43,8 @@ func main() {
 	}
 	defer logger.Sync()
 
+	pkgAuth.SetJWTSecret(srv.Config.Auth.JWTSecret)
+
 	tp, shutdown, err := telemetry.InitTracer(telemetry.Config{
 		ServiceName:    srv.Config.Telemetry.ServiceName,
 		ServiceVersion: srv.Config.Telemetry.ServiceVersion,
@@ -68,6 +72,16 @@ func main() {
 		zap.String("version", srv.Config.Telemetry.ServiceVersion),
 		zap.String("architecture", "Clean Architecture"),
 	)
+
+	// Debug: Print all registered routes
+	logger.Info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	logger.Info("Rotas Registradas:")
+	chi.Walk(srv.Router, func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
+		route = strings.Replace(route, "/*", "", -1)
+		logger.Info("Rota", zap.String("method", method), zap.String("path", route))
+		return nil
+	})
+	logger.Info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
 	addr := fmt.Sprintf("%s:%s", srv.Config.Server.Host, srv.Config.Server.Port)
 

@@ -12,9 +12,10 @@ import (
 )
 
 type CreateUserInput struct {
-	Name  string          `json:"name"`
-	Email string          `json:"email"`
-	Role  entity.UserRole `json:"role"`
+	Name     string          `json:"name"`
+	Email    string          `json:"email"`
+	Password string          `json:"password"`
+	Role     entity.UserRole `json:"role"`
 }
 
 type CreateUserUseCase struct {
@@ -34,6 +35,13 @@ func (uc *CreateUserUseCase) Execute(ctx context.Context, input CreateUserInput)
 	if input.Email == "" {
 		return nil, fmt.Errorf("email é obrigatório")
 	}
+	if input.Password == "" {
+		return nil, fmt.Errorf("senha é obrigatória")
+	}
+
+	if len(input.Password) < 6 {
+		return nil, fmt.Errorf("a senha deve ter no mínimo 6 caracteres")
+	}
 
 	if input.Role == "" {
 		input.Role = entity.RoleStudent
@@ -43,8 +51,11 @@ func (uc *CreateUserUseCase) Execute(ctx context.Context, input CreateUserInput)
 		return nil, fmt.Errorf("role inválido: deve ser student, instructor ou admin")
 	}
 
-	user := entity.NewUser(input.Name, input.Email)
-	user.Role = input.Role
+	user, err := entity.NewUser(input.Name, input.Email, input.Password, input.Role)
+	if err != nil {
+		logger.Error("Erro ao criar hash da senha", zap.Error(err))
+		return nil, fmt.Errorf("erro ao criar usuário")
+	}
 
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
@@ -61,6 +72,7 @@ func (uc *CreateUserUseCase) Execute(ctx context.Context, input CreateUserInput)
 		zap.String("id", user.ID.Hex()),
 		zap.String("email", user.Email),
 		zap.String("name", user.Name),
+		zap.String("role", string(user.Role)),
 	)
 
 	return user, nil

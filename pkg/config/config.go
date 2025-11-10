@@ -13,6 +13,7 @@ type Config struct {
 	Database    DatabaseConfig
 	MercadoPago MercadoPagoConfig
 	Telemetry   TelemetryConfig
+	Auth        AuthConfig
 }
 
 type ServerConfig struct {
@@ -36,6 +37,10 @@ type TelemetryConfig struct {
 	ZipkinURL      string
 	ServiceName    string
 	ServiceVersion string
+}
+
+type AuthConfig struct {
+	JWTSecret string
 }
 
 func Load() (*Config, error) {
@@ -62,6 +67,9 @@ func Load() (*Config, error) {
 			ZipkinURL:      getEnv("ZIPKIN_URL", "http://localhost:9411/api/v2/spans"),
 			ServiceName:    getEnv("SERVICE_NAME", "isayoga-api"),
 			ServiceVersion: getEnv("SERVICE_VERSION", "1.0.0"),
+		},
+		Auth: AuthConfig{
+			JWTSecret: getEnv("JWT_SECRET", "change-this-secret-in-production"),
 		},
 	}
 

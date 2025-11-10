@@ -40,6 +40,18 @@ func (r *UserRepository) FindByID(ctx context.Context, id primitive.ObjectID) (*
 	return &user, nil
 }
 
+func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*entity.User, error) {
+	var user entity.User
+	err := r.collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("usuário não encontrado")
+		}
+		return nil, fmt.Errorf("erro ao buscar usuário: %w", err)
+	}
+	return &user, nil
+}
+
 func (r *UserRepository) FindAll(ctx context.Context) ([]*entity.User, error) {
 	cursor, err := r.collection.Find(ctx, bson.M{})
 	if err != nil {
@@ -62,9 +74,11 @@ func (r *UserRepository) FindAll(ctx context.Context) ([]*entity.User, error) {
 func (r *UserRepository) Update(ctx context.Context, user *entity.User) error {
 	update := bson.M{
 		"$set": bson.M{
-			"name":       user.Name,
-			"email":      user.Email,
-			"updated_at": user.UpdatedAt,
+			"name":          user.Name,
+			"email":         user.Email,
+			"password_hash": user.PasswordHash,
+			"role":          user.Role,
+			"updated_at":    user.UpdatedAt,
 		},
 	}
 

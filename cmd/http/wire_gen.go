@@ -13,6 +13,7 @@ import (
 	payment2 "github.com/marcelobritu/isayoga-api/internal/infrastructure/payment"
 	"github.com/marcelobritu/isayoga-api/internal/infrastructure/repository/mongodb"
 	"github.com/marcelobritu/isayoga-api/internal/interface/http/handler"
+	"github.com/marcelobritu/isayoga-api/internal/usecase/auth"
 	"github.com/marcelobritu/isayoga-api/internal/usecase/class"
 	"github.com/marcelobritu/isayoga-api/internal/usecase/enrollment"
 	"github.com/marcelobritu/isayoga-api/internal/usecase/payment"
@@ -40,7 +41,8 @@ func InitializeServer() (*Server, error) {
 	listUsersUseCase := user.NewListUsersUseCase(userRepository)
 	updateUserUseCase := user.NewUpdateUserUseCase(userRepository)
 	deleteUserUseCase := user.NewDeleteUserUseCase(userRepository)
-	userHandler := handler.NewUserHandler(createUserUseCase, getUserUseCase, listUsersUseCase, updateUserUseCase, deleteUserUseCase)
+	changePasswordUseCase := user.NewChangePasswordUseCase(userRepository)
+	userHandler := handler.NewUserHandler(createUserUseCase, getUserUseCase, listUsersUseCase, updateUserUseCase, deleteUserUseCase, changePasswordUseCase)
 	client := provideMongoClient(mongoDB)
 	classRepository := provideClassRepository(database, client)
 	createClassUseCase := class.NewCreateClassUseCase(classRepository)
@@ -54,7 +56,10 @@ func InitializeServer() (*Server, error) {
 	enrollmentHandler := handler.NewEnrollmentHandler(enrollStudentUseCase, cancelEnrollmentUseCase)
 	processWebhookUseCase := payment.NewProcessWebhookUseCase(paymentRepository, enrollmentRepository)
 	webhookHandler := handler.NewWebhookHandler(processWebhookUseCase)
-	mux := router.Setup(healthHandler, userHandler, classHandler, enrollmentHandler, webhookHandler)
+	loginUseCase := auth.NewLoginUseCase(userRepository)
+	registerUseCase := auth.NewRegisterUseCase(userRepository)
+	authHandler := handler.NewAuthHandler(loginUseCase, registerUseCase)
+	mux := router.Setup(healthHandler, userHandler, classHandler, enrollmentHandler, webhookHandler, authHandler)
 	server := NewServer(configConfig, mux)
 	return server, nil
 }

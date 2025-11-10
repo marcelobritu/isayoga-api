@@ -16,6 +16,7 @@ type UpdateUserInput struct {
 	ID    string `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
+	Role  string `json:"role"`
 }
 
 type UpdateUserUseCase struct {
@@ -41,6 +42,14 @@ func (uc *UpdateUserUseCase) Execute(ctx context.Context, input UpdateUserInput)
 	if input.Email == "" {
 		return nil, fmt.Errorf("email é obrigatório")
 	}
+	if input.Role == "" {
+		return nil, fmt.Errorf("role é obrigatório")
+	}
+
+	role := entity.UserRole(input.Role)
+	if role != entity.RoleStudent && role != entity.RoleInstructor && role != entity.RoleAdmin {
+		return nil, fmt.Errorf("role inválido")
+	}
 
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
@@ -54,7 +63,7 @@ func (uc *UpdateUserUseCase) Execute(ctx context.Context, input UpdateUserInput)
 		return nil, fmt.Errorf("usuário não encontrado")
 	}
 
-	user.Update(input.Name, input.Email)
+	user.Update(input.Name, input.Email, role)
 
 	if err := uc.userRepo.Update(ctx, user); err != nil {
 		logger.Error("Erro ao atualizar usuário",

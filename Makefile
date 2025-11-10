@@ -13,6 +13,14 @@ build:
 wire:
 	~/go/bin/wire ./cmd/http
 
+# Executar seed (carga inicial de dados) - Requer containers rodando
+seed:
+	docker-compose -f docker-compose.dev.yml exec -T api sh -c "cd /app && go run scripts/seed.go"
+
+# Executar seed localmente (requer MongoDB local)
+seed-local:
+	go run scripts/seed.go
+
 # Executar com hot reload local (requer air)
 dev:
 	@which air > /dev/null || (echo "Air não encontrado. Instale com: go install github.com/air-verse/air@latest" && exit 1)

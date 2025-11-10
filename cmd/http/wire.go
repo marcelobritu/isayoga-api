@@ -11,6 +11,7 @@ import (
 	"github.com/marcelobritu/isayoga-api/internal/infrastructure/payment"
 	mongoRepo "github.com/marcelobritu/isayoga-api/internal/infrastructure/repository/mongodb"
 	"github.com/marcelobritu/isayoga-api/internal/interface/http/handler"
+	authUC "github.com/marcelobritu/isayoga-api/internal/usecase/auth"
 	"github.com/marcelobritu/isayoga-api/internal/usecase/class"
 	enrollmentUC "github.com/marcelobritu/isayoga-api/internal/usecase/enrollment"
 	paymentUC "github.com/marcelobritu/isayoga-api/internal/usecase/payment"
@@ -35,16 +36,20 @@ func InitializeServer() (*Server, error) {
 		user.NewListUsersUseCase,
 		user.NewUpdateUserUseCase,
 		user.NewDeleteUserUseCase,
+		user.NewChangePasswordUseCase,
 		class.NewCreateClassUseCase,
 		class.NewListClassesUseCase,
 		enrollmentUC.NewEnrollStudentUseCase,
 		enrollmentUC.NewCancelEnrollmentUseCase,
 		paymentUC.NewProcessWebhookUseCase,
+		authUC.NewLoginUseCase,
+		authUC.NewRegisterUseCase,
 		handler.NewHealthHandler,
 		handler.NewUserHandler,
 		handler.NewClassHandler,
 		handler.NewEnrollmentHandler,
 		handler.NewWebhookHandler,
+		handler.NewAuthHandler,
 		router.Setup,
 		NewServer,
 	)
